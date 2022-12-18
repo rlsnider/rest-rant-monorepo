@@ -11,13 +11,38 @@ router.post('/', async (req, res) => {
             email: req.body.email
         }
     })
+    if (!user || !await bcrypt.compare(req.body.password, user.passwordDigest)) {
+        res.status(404).json({ 
+            message: `Could not find a user with the provided username and password`
+        })
+
+    } else {
+        req.session.userId = user.userId
+        res.json ({ user })
+    }
+
+   
     if(!user || !await bcrypt.compare(req.body.password, user.passwordDigest)) {
         res.status(404).json({ 
             message: "user cannot be found"
         });
 
-    }else {
+    } else {
         res.json({ user })
+    }
+})
+
+router.get('/profile', async (req, res) => {
+    console.log(`The logged in User is ${req.session.userId}`)
+    try{
+        let user = await User.findOne({ 
+            where: { 
+                userId: req.session.userId
+            }
+        })
+        res.json(user)
+    } catch(e) {
+        res.json(null)
     }
 })
 
