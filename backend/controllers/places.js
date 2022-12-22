@@ -5,7 +5,7 @@ const jwt = require("json-web-token");
 const { Place, Comment, User } = db;
 
 router.post("/", async (req, res) => {
-  if (!req.currentUser?.canAddPlaces()) {
+  if (req.currentUser?.cannotAddPlaces()) {
     return res.status(403).json({ message: "Not Authorized to add a Place!" });
   }
   if (!req.body.pic) {
@@ -49,7 +49,7 @@ router.get("/:placeId", async (req, res) => {
 });
 
 router.put("/:placeId", async (req, res) => {
-  if (!req.currentUser?.canEditPlaces()) {
+  if (req.currentUser?.cannotEditPlaces()) {
     return res.status(403).json({ message: "Not Authorized to edit places" });
   }
   let placeId = Number(req.params.placeId);
@@ -72,7 +72,7 @@ router.put("/:placeId", async (req, res) => {
 });
 
 router.delete("/:placeId", async (req, res) => {
-  if (!req.currentUser?.canDeletePlaces) {
+  if (req.currentUser?.cannotDeletePlaces()) {
     return res.status(403).json({ message: "Not Authorized to delete a place" });
   }
   let placeId = Number(req.params.placeId);
